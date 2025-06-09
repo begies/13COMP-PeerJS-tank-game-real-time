@@ -1,0 +1,66 @@
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;  
+  justify-content: flex-start;  
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  background-color: black;
+  color: lightgray;
+}
+  
+.container {
+  display: flex;
+  gap: 20px;
+}
+  
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+  
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: #fff;
+  transition: background-color 0.3s;
+  width: 220px; /* Set a fixed width */
+  text-align: center;
+}
+  
+button:hover {
+  background-color: #0056b3;
+}
+
+.page-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Vertically center */
+  align-items: center;     /* Horizontally center */
+  width: 100%;
+}
+
+/*-----------------------------------------------------------*
+  Firebase status div styling
+/*----------------------------------------------------------*/
+#s_fbStatus {
+  display: block;
+  margin: 0px;
+  padding-top: 4px;
+  font-size: 14px;
+}
+
+.p_fbStatus {
+  display: inline-block;
+  margin: 0px;
+  padding-top: 4px;
+  margin-right: 20px; /* Add some spacing between paragraphs */
+}
+  

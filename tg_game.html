@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Tank game</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="./assets/dtec_favicon.PNG">
+  
+  <!-- stylesheets *******************************************-->
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
+  <link rel="stylesheet" href="./tg_game.css">
+
+  <!-- P5.js & P5.play ***************************************-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.8.0/p5.js" 
+    integrity="sha512-bzpp8klYroR6PFgL3RJ+VkvY5hJna7Zd38OA56peUDHSNQpSiN9lDQVnMYtcw7hoAVhbR6mAOdH+ymzg1o+G0A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.8.0/addons/p5.sound.js" 
+    integrity="sha512-TU9AWtV5uUZPX8dbBAH8NQF1tSdigPRRT82vllAQ1Ke28puiqLA6ZVKxtUGlgrH6yWFnkKy+sE6luNEGH9ar0A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://p5play.org/v3/planck.min.js"></script>
+  <script src="https://p5play.org/v3/p5play.js"></script>
+  
+  <!-- Your JS files & main module ***************************-->
+ 
+</head>
+  
+<!--*************************************************************
+  BODY
+**************************************************************-->
+<body id="body">
+  <header style="display: flex; align-items: center; gap: 10px; padding: 10px;">
+    <img id="img_photoURL" src="" 
+         style="width: 40px; height: 40px; z-index: 10;">
+    <h2 style="margin: 0;">Real Time 2 Player Tank Game: 
+        <span id="h_player" style="padding-left: 10px;">select player</span>
+        <span id="h_result" style="padding-left: 10px;">?</span>
+    </h2>
+  </header>
+ 
+  <main>
+    <!-- Row 1 -->
+    <div class="status-row">
+      <div class="col-label">Your Peer ID:</div>
+      <div class="col-id" id="p_my_id">...</div>
+      <input id="i_lobby_key" class="col-input" placeholder="enter game id">
+      <button id="b_enter" class="col-button">ENTER</button>
+    </div>
+  
+    <!-- Row 2 -->
+    <div class="status-row">
+      <div class="col-label">Other Peer ID:</div>
+      <div id="p_other_id" class="col-id">not connected</div>
+      <button id="b_player_1" class="col-input w3-disabled">PLAYER-1</button>
+      <button id="b_player_2" class="col-button w3-disabled">PLAYER-2</button>
+      <button id="b_restart"  class="col-button w3-disabled">RESTART</button>
+    </div>
+  </main>
+  
+  <br>
+  <div id="d_canvasPlaceHolder"></div>
+
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+  <script type="module" src="tg_game.mjs"></script>
+</body>
+</html>       
+<!--*************************************************************
+//  END OF TG_GAME.HTML
+**************************************************************-->

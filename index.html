@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>12COMP firebase</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- stylesheets *******************************************-->
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
+    <link rel="stylesheet" type="text/css" href="./style.css">
+
+    <!-- firebase start ****************************************-->
+    <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
+    <!-- firebase end ******************************************-->
+
+    <!-- Your JS files & main module ***************************-->
+    <script type="module" src="./main.mjs"></script>
+</head>
+
+<!--*************************************************************
+  BODY
+**************************************************************-->
+<body>
+    <div class="page-content">
+        <header class="container">
+            <h1>mr Bob's fab games</h1>
+        </header>
+
+        <section>
+            <div class="container">
+                <button id="b_login" onclick="fb_login()">LOGIN</button>
+            </div>
+        </section>
+    </div>
+
+    <!--***********************************************************
+        firebase status
+    ************************************************************-->
+    <footer id="s_fbStatus">
+        <div style="padding:8px;">
+            <p class="p_fbStatus">login: <span id="p_fbLogin"> n/a</span></p>
+            <p class="p_fbStatus">write rec: <span id="p_fbWriteRec"> n/a</span></p>
+            <p class="p_fbStatus">read rec: <span id="p_fbReadRec"> n/a</span></p>
+            <p class="p_fbStatus">read all: <span id="p_fbReadAll"> n/a</span></p>
+            <p class="p_fbStatus">update rec: <span id="p_fbUpdateRec"> n/a</span></p>
+            <p class="p_fbStatus">read sorted:<span id="p_fbReadSorted">n/a</span></p>
+            
+            <p class="p_fbStatus">listen: <span id="p_fbListen"> n/a</span></p>
+            <p class="p_fbStatus">delete rec: <span id="p_fbDeleteRec"> n/a</span></p>
+            <p class="p_fbStatus">debug: <span id="p_debug"> n/a</span></p>
+        </div>
+    </footer>
+
+</body>
+</html>
+<!--*************************************************************
+  END OF INDEX.HTML
+**************************************************************-->

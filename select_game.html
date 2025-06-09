@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Select Game</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- stylesheets *******************************************-->
+    <link rel="stylesheet" type="text/css" href="./select_game.css">
+
+    <script type="module">
+        console.log('%c select_game inline script',
+                    'color: blue; background-color: white;');
+        /**************************************************************/
+        // Import all external constants & functions required
+        /**************************************************************/
+        import { FB_GAMEDB, fb_userDetails, fb_initialise, fb_changeAuth }
+            from '../../fb_io.mjs';
+        // Connect to firebase & retirieve sessionStorage data
+        fb_initialise();
+        fb_changeAuth();
+        fb_userDetails.uid      = sessionStorage.getItem('uid') || 'n/a';
+        fb_userDetails.photoURL = sessionStorage.getItem('photoURL');
+        document.getElementById('img_photoURL').src = fb_userDetails.photoURL || './assets/dtec_favicon.PNG';
+    </script>
+</head>
+
+<!--*************************************************************
+  BODY
+**************************************************************-->
+<body>
+    <div class="page-content">
+        <header class="container">
+            <img id="img_photoURL" src="" 
+                 style="width: 40px; height: 40px; z-index: 10;">
+            <h1>mr Bob's fab games</h1>
+        </header>
+
+        <section>
+            <div class="container">
+                <button onclick="window.location.href='/tg_game.html'">TANK GAME</button>
+                <button onclick="window.location.href='/games/zz/zz_game.html'">ZOMBZ</button>
+            </div>
+        </section>
+    </div>
+
+    <!--***********************************************************
+        firebase status
+    ************************************************************-->
+    <footer id="s_fbStatus">
+        <div style="padding:8px;">
+            <p class="p_fbStatus">login: <span id="p_fbLogin"> n/a</span></p>
+            <p class="p_fbStatus">write rec: <span id="p_fbWriteRec"> n/a</span></p>
+            <p class="p_fbStatus">read rec: <span id="p_fbReadRec"> n/a</span></p>
+            <p class="p_fbStatus">read all: <span id="p_fbReadAll"> n/a</span></p>
+            <p class="p_fbStatus">update rec: <span id="p_fbUpdateRec"> n/a</span></p>
+            <p class="p_fbStatus">read sorted:<span id="p_fbReadSorted">n/a</span></p>
+            
+            <p class="p_fbStatus">listen: <span id="p_fbListen"> n/a</span></p>
+            <p class="p_fbStatus">delete rec: <span id="p_fbDeleteRec"> n/a</span></p>
+            <p class="p_fbStatus">debug: <span id="p_debug"> n/a</span></p>
+        </div>
+    </footer>
+
+</body>
+</html>
+<!--*************************************************************
+  END OF SELECT_GAME.HTML
+**************************************************************-->

@@ -1,0 +1,77 @@
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    font-family: sans-serif;
+    background-color: rgb(231, 225, 225);
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+.player-1 {
+    background-color: #3be0b9;
+}
+
+.player-2 {
+    background-color: #e491d2;
+}
+
+.youWin {
+    background-color: green;
+}
+
+.youLost {
+    background-color: red;
+}
+  
+main {
+    padding: 6px 10px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-width: 75vw;
+}
+  
+p {
+    margin: 4px 4px 4px 0px;
+}
+
+.status-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+  
+.status-row p {
+    margin: 0;
+}
+  
+.col-label {
+    min-width: 100px;
+    text-align: left;
+}
+  
+.col-id {
+    width: 400px;
+    text-align: right;
+}
+  
+.col-input,
+.col-button {
+    width: 120px;
+}
+
+#b_restart {
+    margin-left: 40px;
+}
+  
+#d_canvasPlaceHolder {
+    margin: 0px;
+    padding: 0px;
+    flex-grow: 1;
+    background-color: LightGray; 
+}
