@@ -8,7 +8,7 @@
 /**************************************************************/
 const FB_COL_C = 'white';	    // These two const are part of the coloured 	
 const FB_COL_B = '#CD7F32';	  //  console.log for export functions scheme
-console.log('%c fb_io.mjs',
+console.log('%c fb_io.mjs 1',
             'color: blue; background-color: white;');
 
 export var FB_GAMEDB;
