@@ -114,6 +114,8 @@ export function fb_login() {
             //✅ ADMIN: Successful read
             const fb_data = snapshot.val();
             if (fb_data != null) {
+              console.log('%c fb_login(): registered + admin', 
+                          'color: ' + FB_COL_C + '; background-color: ' + FB_COL_B + ';');
               // User is admin so set sessionStorage to 'y'
               sessionStorage.setItem('admin', 'y');
               window.location.href='select_game.html';
@@ -121,6 +123,8 @@ export function fb_login() {
             else {
               //⚠️ ADMIN: Successful read BUT no rec found
               // User is NOT admin so set sessionStorage to 'n'
+              console.log('%c fb_login(): registered + NOT admin', 
+                          'color: ' + FB_COL_C + '; background-color: ' + FB_COL_B + ';');
               sessionStorage.setItem('admin', 'n');
               window.location.href='select_game.html';
             }
@@ -135,6 +139,8 @@ export function fb_login() {
     else {
       //⚠️ USERDETAILS: Successful read BUT no rec found SO load reg page
       //window.location.href='reg.html';
+      console.log('%c fb_login(): Not registered/admin', 
+                  'color: ' + FB_COL_C + '; background-color: ' + FB_COL_B + ';');
       sessionStorage.setItem('admin', 'n');
       window.location.href='select_game.html';      // SKIP REGISTRATION
     }
