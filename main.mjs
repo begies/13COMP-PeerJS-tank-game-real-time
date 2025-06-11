@@ -32,7 +32,7 @@ import { fb_initialise, fb_login, fb_changeAuth, fb_logout,
 /**************************************************************/
 // index.html main code
 /**************************************************************/
-
+document.getElementById('b_login').addEventListener('click', fb_login);
 
 /**************************************************************/
 //   END OF CODE
