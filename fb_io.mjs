@@ -119,10 +119,10 @@ export function fb_login() {
               window.location.href='select_game.html';
             } 
             else {
-            //⚠️ ADMIN: Successful read BUT no rec found
-            // User is NOT admin so set sessionStorage to 'n'
-            sessionStorage.setItem('admin', 'n');
-            window.location.href='select_game.html';
+              //⚠️ ADMIN: Successful read BUT no rec found
+              // User is NOT admin so set sessionStorage to 'n'
+              sessionStorage.setItem('admin', 'n');
+              window.location.href='select_game.html';
             }
           })
           
@@ -133,8 +133,10 @@ export function fb_login() {
           /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     } 
     else {
-    //⚠️ USERDETAILS: Successful read BUT no rec found SO load reg page
-    window.location.href='reg.html';
+      //⚠️ USERDETAILS: Successful read BUT no rec found SO load reg page
+      //window.location.href='reg.html';
+      sessionStorage.setItem('admin', 'n');
+      window.location.href='select_game.html';      // SKIP REGISTRATION
     }
   })
   
