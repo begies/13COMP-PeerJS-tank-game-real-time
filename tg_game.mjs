@@ -2,11 +2,22 @@
 // tg_game.mjs (REAL-TIME VERSION)
 // 2 player tank game using PeerJS & Firebase
 // Updated for real-time syncing of tank movement and firing
-// Written by mr Bob, Updated by ChatGPT, Term 2 2025
+// Written by mr Bob, Term 2 2025
 /**************************************************************/
 const COL_C = 'black';
 const COL_B = '#F0E68C';
 console.log('%c tg_game.mjs (REAL-TIME)', 'color: blue; background-color: white;');
+
+/**************************************************************/
+// Trap errors
+/**************************************************************/
+window.addEventListener('error', (event) => {
+  console.error('❌ Uncaught Error:', event.error);
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('❌ Unhandled Promise Rejection:', event.reason);
+});
 
 /**************************************************************/
 // Import all external constants & functions requiLightGray
@@ -21,41 +32,57 @@ import { Canvas, Sprite, Group, loadImage, background, width, height, mouse }
 import { ref, set, get }
   from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-import { FB_GAMEDB, fb_userDetails, fb_initialise, fb_changeAuth }
+import { FB_GAMEDB, fb_userDetails, fb_initialise, fb_changeAuth, fb_onDisconnect }
   from './fb_io.mjs';
 
 // PeerJS variables
-const TG_PEER        = new Peer();
-const TG_UPDATE_TIME = 50;
-let tg_conn          = null;
-let tg_isInitiator   = false;
-let tg_connection    = { id: 'n/a' };
+const TG_PEER = new Peer();
+TG_PEER.on('error', (err) => {
+  console.error('❌ TG_PEER.on("error"): ' + err);
+  alert('PeerJS Error: ' + err);
+});
+
+const TG_UPDATE_TIME  = 50;
+let tg_conn           = null;
+let tg_isInitiator    = false;
+let tg_connection     = { id: 'n/a', 
+                          p1_gameName: 'n/a',
+                          p2_gameName: 'n/a'
+};
 
 // Get HTML elements
-const TG_ENTER       = document.getElementById('b_enter');
-const TG_PLAYER_1    = document.getElementById('b_player_1');
-const TG_PLAYER_2    = document.getElementById('b_player_2');
-const TG_RESTART     = document.getElementById('b_restart');
+const TG_ENTER        = document.getElementById('b_enter');
+const TG_PLAYER_1     = document.getElementById('b_player_1');
+const TG_PLAYER_2     = document.getElementById('b_player_2');
+const TG_RESTART      = document.getElementById('b_restart');
 
-const TG_BODY        = document.getElementById('body');
-const TG_H_PLAYER    = document.getElementById('h_player');
-const TG_H_RESULT    = document.getElementById('h_result');
-const TG_I_LOBBY_KEY = document.getElementById('i_lobby_key');
-const TG_P_MY_ID     = document.getElementById('p_my_id');
-const TG_P_OTHER_ID  = document.getElementById('p_other_id');
+const TG_BODY         = document.getElementById('body');
+const TG_H_PLAYER     = document.getElementById('h_player');
+const TG_H_RESULT     = document.getElementById('h_result');
+const TG_I_LOBBY_KEY  = document.getElementById('i_lobby_key');
+const TG_P_YOUR_NAME  = document.getElementById('p_your_name');
+const TG_P_OTHER_NAME = document.getElementById('p_other_name');
+const TG_P_MY_ID      = document.getElementById('p_my_id');
+const TG_P_OTHER_ID   = document.getElementById('p_other_id');
 
 // Connect to firebase & retirieve sessionStorage data
 const TG_LOBBY = 'lobby/tg';
 fb_initialise();
 fb_changeAuth();
-fb_userDetails.uid      = sessionStorage.getItem('uid') || 'n/a';
-fb_userDetails.photoURL = sessionStorage.getItem('photoURL');
-document.getElementById('img_photoURL').src = fb_userDetails.photoURL || './assets/dtec_favicon.PNG';
+fb_userDetails.gameName    = sessionStorage.getItem('gameName') || 'unregistered';
+fb_userDetails.uid         = sessionStorage.getItem('uid') || 'n/a';
+fb_userDetails.photoURL    = sessionStorage.getItem('photoURL');
+tg_connection.p1_gameName  = fb_userDetails.gameName;
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById('img_photoURL').src = fb_userDetails.photoURL || './assets/dtec_favicon.PNG';
+  TG_P_YOUR_NAME.textContent = fb_userDetails.gameName;
+});
 
 // Tank game variables
 let tg_game_id         = 'n/a'; // Game ID for the lobby
 let tg_gameArea;
-let tg_gameActive      = 'i';
+let tg_gameActive      = false;
 let tg_playerNum       = 'not set';
 let tg_other_playerNum = 'not set';
 let tg_wallGroup;
@@ -121,7 +148,7 @@ window.setup = function () {
 window.draw = function () {
   background("LightGray");
 
-  if (tg_gameActive =='a') { 
+  if (tg_gameActive) { 
     tg_roundGroup.collides(tg_wallGroup, (tg_round, wall) => {
       tg_round.remove();
     });
@@ -177,7 +204,7 @@ function tg_createTanks(_playerNum) {
 // Return: n/a
 /**************************************************************/
 function tg_createWalls() {
-  console.log('%c tg_createWalls: for player= ' + tg_playerNum,
+  console.log('%c tg_createWalls: ',
               'color: ' + COL_C + '; background-color: ' + COL_B + ';');
 
   tg_wallGroup = new Group();
@@ -315,7 +342,7 @@ function tg_handleTankHit(tank, _result) {
 
   TG_BODY.classList.add('youWin');
   TG_H_RESULT.textContent = 'WINS'
-  tg_gameActive = 'i';           
+  tg_gameActive = false;           
   tg_tankGroup[0].x = tg_tankSettings[0].x;  
   tg_tankGroup[0].y = tg_tankSettings[0].y;
   tg_tankGroup[1].x = tg_tankSettings[1].x;   
@@ -334,18 +361,18 @@ function tg_handleTankHit(tank, _result) {
 }
 
 /**************************************************************/
-// setupConnection()
+// setupConnection(_playerNum)
 // Called by TG_PEER.on('connection') & tg_connect()
 // Starts syncing states and handles input
-// Input:  n/a
+// Input:  player number
 // Return: n/a
 /**************************************************************/
-function setupConnection() {
-  console.log('%c setupConnection(): for player= ' + tg_playerNum +
+function setupConnection(_text) {
+  console.log('%c setupConnection(): ' + _text +
               '  tg_tankGroup[tg_playerNum].x/y= ' + tg_tankGroup[tg_playerNum].x + 
               '/' + tg_tankGroup[tg_playerNum].y,
               'color: ' + COL_C + '; background-color: ' + COL_B + ';'); 
-
+  
   TG_P_OTHER_ID.textContent = tg_connection.id;
   // set up event to RECIEVE input from other player
   tg_conn.on('data', tg_handleData);
@@ -366,7 +393,7 @@ function setupConnection() {
 
 /**************************************************************/
 // tg_handleData(_data)
-// Event recive input data - setup by setupConnection()
+// Event recieve input data - setup by setupConnection()
 // Applies incoming peer data from other player
 // Input:  object containing peer updates, Type can be:
 //          'state' for tank data, 'fire' for tank round data
@@ -392,7 +419,7 @@ function tg_handleData(_data) {
     TG_BODY.classList.add('youLost');
     TG_H_RESULT.textContent = 'LOSES'
     TG_RESTART.classList.remove('w3-disabled');
-    tg_gameActive = 'i';       
+    tg_gameActive = false;       
     tg_roundGroup.removeAll();   
     tg_tankGroup[0].x = tg_tankSettings[0].x;  
     tg_tankGroup[0].y = tg_tankSettings[0].y;
@@ -423,14 +450,33 @@ TG_PEER.on('open', _id => {
 // Setup the interval based tank data transmission to PLAYER-2
 /**************************************************************/
 TG_PEER.on('connection', _incoming => {
+  const TG_META = _incoming.metadata;
   console.log('%c TG_PEER.on("connection"): incoming= ' + 
-              _incoming.type + ' from player ' + _incoming.playerNum,
+              _incoming.type + ' from player ' + TG_META.playerNum,
               'color: ' + COL_C + '; background-color: ' + COL_B + ';');
-  
+
+  TG_P_OTHER_NAME.textContent = TG_META.gameName;        
   tg_conn = _incoming;
+  tg_conn.on('error', (err) => {
+    console.error('❌ incoming tg_conn.on("error"): ' + err);
+    alert('Incoming connection error: ' + err);
+  });
+  
+  tg_conn.on('close', () => {
+    console.log('%c⚠️ tg_conn.on("close"): Connection with other player closed',
+                'color: ' + COL_C + '; background-color: ' + COL_B + ';');
+    alert('The other player has disconnected.');
+  
+    // Optional: Reset UI or game state
+    tg_gameActive = false;
+    TG_H_RESULT.textContent = 'Disconnected';
+    TG_BODY.classList.add('youLost'); // or a different class
+    TG_RESTART.classList.remove('w3-disabled');
+  });
+  
   tg_isInitiator = false;
   tg_conn.on('open', () => {
-    setupConnection();
+    setupConnection('PLAYER-1 recieves a connection request from PLAYER-2');
   });
 });
 
@@ -469,7 +515,7 @@ TG_PLAYER_1.onclick = () => {
   console.log('%c my/other tank: ' + tg_tankGroup[tg_playerNum].name + 
               '/' + tg_tankGroup[tg_other_playerNum].name, 
               'color: ' + COL_C + '; background-color: ' + COL_B + ';');  
-  tg_gameActive = 'a';  // Set game active for PLAYER-1
+  tg_gameActive = true;  // Set game active for PLAYER-1
 };
 
 /**************************************************************/
@@ -492,7 +538,7 @@ TG_PLAYER_2.onclick = () => {
   console.log('%c my/other tank: ' + tg_tankGroup[tg_playerNum].name + 
               '/' + tg_tankGroup[tg_other_playerNum].name, 
               'color: ' + COL_C + '; background-color: ' + COL_B + ';');   
-  tg_gameActive = 'a';  // Set game active for PLAYER-1
+  tg_gameActive = true;  // Set game active for PLAYER-1
 };
 
 /**************************************************************/
@@ -518,10 +564,34 @@ function tg_connect() {
 
   //TG_P_OTHER_ID.textContent = tg_connection.id;
   if (!tg_connection.id) return;
-  tg_conn = TG_PEER.connect(tg_connection.id);
+  tg_conn = TG_PEER.connect(tg_connection.id, {
+    metadata: {
+      gameName:  fb_userDetails.gameName,
+      playerNum: tg_playerNum,
+      tankName:  tg_tankGroup[tg_playerNum].name
+    }
+  });
+  tg_conn.on('error', (err) => {
+    console.error('❌ tg_conn.on("error"): ' + err);
+    alert('Connection Error: ' + err);
+  });
+
+  tg_conn.on('close', () => {
+    console.log('%c ⚠️ tg_conn.on("close"): Connection with other player closed',
+                'color: ' + COL_C + '; background-color: ' + COL_B + ';');
+    alert('The other player has disconnected.');
+  
+    // Optional: Reset UI or game state
+    tg_gameActive = false;
+    TG_H_RESULT.textContent = 'Disconnected';
+    TG_BODY.classList.add('youLost'); // or a different class
+    TG_RESTART.classList.remove('w3-disabled');
+  });
+  
+  //tg_conn = TG_PEER.connect(tg_connection.id);
   tg_isInitiator = true;
   tg_conn.on('open', () => {
-    setupConnection();
+    setupConnection('PLAYER-2 initiates connection with PLAYER-1');
   });
 };
 
@@ -544,6 +614,7 @@ function tg_writeConnectionId(_path, _key, _data) {
     .then(() => {
       console.log('%c ✅ tg_writeConnectionId(): OK for path/key= ' + _path + '/' + _key,
                   'color: ' + COL_C + '; background-color: ' + COL_B + ';');
+      fb_onDisconnect(_path, _key);
     })
     .catch((error) => {
       console.error('❌ tg_writeConnectionId(): ERROR for path/key= ' + _path + '/' + _key + ': ', error);
@@ -571,6 +642,8 @@ function tg_readConnectionId(_path, _key, _save) {
                     'color: ' + COL_C + '; background-color: ' + COL_B + ';');
         Object.assign(_save, TG_DATA); 
         console.log(_save);             //DIAG
+        TG_P_OTHER_NAME.textContent = TG_DATA.p1_gameName;
+        fb_onDisconnect(_path, _key);
         tg_connect();                   // Initiate connection to PLAYER-1
       } else {
         console.log('%c ⚠️ tg_readConnectionId(): NO REC for path/key= ' + _path + '/' + _key,

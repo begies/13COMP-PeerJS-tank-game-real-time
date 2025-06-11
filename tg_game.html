@@ -40,7 +40,9 @@
   <main>
     <!-- Row 1 -->
     <div class="status-row">
-      <div class="col-label">Your Peer ID:</div>
+      <div class="col-player">PLAYER-1:</div>
+      <div id="p_your_name" class="col-name">Your</div>
+      <div class="col-label">Peer ID:</div>
       <div class="col-id" id="p_my_id">...</div>
       <input id="i_lobby_key" class="col-input" placeholder="enter game id">
       <button id="b_enter" class="col-button">ENTER</button>
@@ -48,7 +50,9 @@
   
     <!-- Row 2 -->
     <div class="status-row">
-      <div class="col-label">Other Peer ID:</div>
+      <div class="col-player">PLAYER-2:</div>
+      <div id="p_other_name" class="col-name">Other</div>
+      <div class="col-label">Peer ID:</div>
       <div id="p_other_id" class="col-id">not connected</div>
       <button id="b_player_1" class="col-input w3-disabled">PLAYER-1</button>
       <button id="b_player_2" class="col-button w3-disabled">PLAYER-2</button>

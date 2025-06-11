@@ -91,50 +91,49 @@ export function fb_login() {
     console.log(fb_userDetails);       //DIAG
 
     //sessionStorage.setItem('googleLoginData', JSON.stringify(fb_userDetails));
-    sessionStorage.setItem('uid', fb_userDetails.uid );
+    sessionStorage.setItem('uid',         fb_userDetails.uid );
     sessionStorage.setItem('displayName', fb_userDetails.displayName );
-    sessionStorage.setItem('email', fb_userDetails.email );
-    sessionStorage.setItem('photoURL', fb_userDetails.photoURL );
-
-    //window.location.href='select_game.html';
-
+    sessionStorage.setItem('email',       fb_userDetails.email );
+    sessionStorage.setItem('photoURL',    fb_userDetails.photoURL );
+    
   /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
   // Read userDetails
   const FB_DBREF = ref(FB_GAMEDB, 'userDetails/' + fb_userDetails.uid);
   get(FB_DBREF)
   .then((snapshot) => {
-    //✅ USERDETAILS: Successful read So read admin record
     const fb_data = snapshot.val();
     if (fb_data != null) {
-          /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-          // Read admin
-          const FB_DBREF = ref(FB_GAMEDB,'admin/' + fb_userDetails.uid);
-          get(FB_DBREF)
-          .then((snapshot) => {
-            //✅ ADMIN: Successful read
-            const fb_data = snapshot.val();
-            if (fb_data != null) {
-              console.log('%c fb_login(): registered + admin', 
-                          'color: ' + FB_COL_C + '; background-color: ' + FB_COL_B + ';');
-              // User is admin so set sessionStorage to 'y'
-              sessionStorage.setItem('admin', 'y');
-              window.location.href='select_game.html';
-            } 
-            else {
-              //⚠️ ADMIN: Successful read BUT no rec found
-              // User is NOT admin so set sessionStorage to 'n'
-              console.log('%c fb_login(): registered + NOT admin', 
-                          'color: ' + FB_COL_C + '; background-color: ' + FB_COL_B + ';');
-              sessionStorage.setItem('admin', 'n');
-              window.location.href='select_game.html';
-            }
-          })
-          
-          .catch((error) => {
-            //❌ ADMIN: Read error  
-            console.log('❌' + error); 
-          });
-          /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+      //✅ USERDETAILS: Successful read a rec So read admin record
+      sessionStorage.setItem('gameName',    fb_data.gameName );
+      /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+      // Read admin
+      const FB_DBREF = ref(FB_GAMEDB,'admin/' + fb_userDetails.uid);
+      get(FB_DBREF)
+      .then((snapshot) => {
+        const fb_data = snapshot.val();
+        if (fb_data != null) {
+          //✅ ADMIN: Successful read a record
+          console.log('%c fb_login(): registered + admin', 
+                      'color: ' + FB_COL_C + '; background-color: ' + FB_COL_B + ';');
+          // User is admin so set sessionStorage to 'y'
+          sessionStorage.setItem('admin', 'y');
+          window.location.href='select_game.html';
+        } 
+        else {
+          //⚠️ ADMIN: Successful read BUT no rec found
+          // User is NOT admin so set sessionStorage to 'n'
+          console.log('%c fb_login(): registered + NOT admin', 
+                      'color: ' + FB_COL_C + '; background-color: ' + FB_COL_B + ';');
+          sessionStorage.setItem('admin', 'n');
+          window.location.href='select_game.html';
+        }
+      })
+      
+      .catch((error) => {
+        //❌ ADMIN: Read error  
+        console.log('❌' + error); 
+      });
+      /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     } 
     else {
       //⚠️ USERDETAILS: Successful read BUT no rec found SO load reg page
@@ -480,8 +479,8 @@ export function fb_listen(_path, _key) {
 // Return: n/a
 /**************************************************************/
 export function fb_onDisconnect(_path, _key) {
-  _path = 'userDetails';
-  _key  = 'bbbbb';
+  //_path = 'userDetails';
+  //_key  = 'bbbbb';
 
   console.log('%c fb_onDisconnect(): path/key= ' + _path + '/' + _key,
               'color: ' + FB_COL_C + '; background-color: ' + FB_COL_B + ';');

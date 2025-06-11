@@ -30,7 +30,6 @@ main {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    max-width: 75vw;
 }
   
 p {
@@ -49,14 +48,24 @@ p {
 .status-row p {
     margin: 0;
 }
-  
+ 
+.col-player {
+    min-width: 20px;
+    text-align: left;
+}
+
+.col-name {
+    min-width: 100px;
+    text-align: right;
+}
+
 .col-label {
     min-width: 100px;
     text-align: left;
 }
   
 .col-id {
-    width: 400px;
+    width: 300px;
     text-align: right;
 }
   
